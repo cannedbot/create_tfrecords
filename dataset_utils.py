@@ -32,6 +32,8 @@ def bytes_feature(values):
   Returns:
     a TF-Feature.
   """
+
+  values = tf.compat.as_bytes(values)
   return tf.train.Feature(bytes_list=tf.train.BytesList(value=[values]))
 
 
@@ -84,7 +86,7 @@ def read_label_file(dataset_dir, filename=LABELS_FILENAME):
     A map from a label (integer) to class name.
   """
   labels_filename = os.path.join(dataset_dir, filename)
-  with tf.gfile.Open(labels_filename, 'r') as f:
+  with tf.gfile.Open(labels_filename, 'rb') as f:
     lines = f.read().decode()
   lines = lines.split('\n')
   lines = filter(None, lines)
@@ -192,7 +194,7 @@ def _convert_dataset(split_name, filenames, class_names_to_ids, dataset_dir, tfr
             sys.stdout.flush()
 
             # Read the filename:
-            image_data = tf.gfile.FastGFile(filenames[i], 'r').read()
+            image_data = tf.gfile.FastGFile(filenames[i], 'rb').read()
             height, width = image_reader.read_image_dims(sess, image_data)
 
             class_name = os.path.basename(os.path.dirname(filenames[i]))
